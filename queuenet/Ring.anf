@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scave:Analysis xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:scave="http://www.omnetpp.org/omnetpp/scave">
+  <inputs>
+    <inputs name="/queuenet/results/Ring-*.vec"/>
+    <inputs name="/queuenet/results/Ring-*.sca"/>
+  </inputs>
+  <datasets>
+    <datasets name="ds">
+      <items xsi:type="scave:Add" filterPattern="name(length)" type="VECTOR"/>
+      <items xsi:type="scave:Group" name="temp3">
+        <items xsi:type="scave:Apply" operation="slidingwinavg">
+          <params name="windowSize" value="10"/>
+        </items>
+        <items xsi:type="scave:LineChart" name=""/>
+      </items>
+    </datasets>
+  </datasets>
+  <chartSheets/>
+</scave:Analysis>

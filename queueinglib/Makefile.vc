@@ -1,0 +1,224 @@
+#
+# OMNeT++/OMNEST Makefile for queueinglib
+#
+# This file was generated with the command:
+#  opp_makemake -f --nmake --deep --make-so -O out
+#
+
+# Name of target to be created (-o option)
+TARGET = queueinglib.dll
+
+# C++ include paths (with -I)
+INCLUDE_PATH = -I.
+
+# Additional object and library files to link with
+EXTRA_OBJS =
+
+# Additional libraries (-L, -l options)
+LIBS =
+
+# Output directory
+PROJECT_OUTPUT_DIR = out
+PROJECTRELATIVE_PATH =
+O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
+
+# Object files for local .cc and .msg files
+OBJS = \
+    $O/ResourceBasedQueue.obj \
+    $O/Merge.obj \
+    $O/PassiveQueue.obj \
+    $O/Sink.obj \
+    $O/ResourcePool.obj \
+    $O/Job.obj \
+    $O/Classifier.obj \
+    $O/Clone.obj \
+    $O/Allocate.obj \
+    $O/Router.obj \
+    $O/Fork.obj \
+    $O/JobList.obj \
+    $O/Server.obj \
+    $O/Deallocate.obj \
+    $O/Queue.obj \
+    $O/SelectionStrategies.obj \
+    $O/Delay.obj \
+    $O/Join.obj \
+    $O/Source.obj \
+    $O/Job_m.obj
+
+# Message files
+MSGFILES = \
+    Job.msg
+
+MAKE=nmake -nologo -f Makefile.vc
+
+#------------------------------------------------------------------------------
+
+# Pull in OMNeT++ configuration (Makefile.inc or configuser.vc)
+!if "$(OMNETPP_CONFIGFILE)"!=""
+CONFIGFILE = $(OMNETPP_CONFIGFILE)
+!elseif "$(OMNETPP_ROOT)"!=""
+CONFIGFILE = $(OMNETPP_ROOT)/configuser.vc
+!else
+CONFIGFILE = /home/rhornig/omnetpp\configuser.vc
+!endif
+
+!if !exist($(CONFIGFILE))
+!error '$(CONFIGFILE)' does not exist -- set OMNETPP_ROOT or OMNETPP_CONFIGFILE to point to configuser.vc. From the IDE, set the OMNeT++ install location on the Window | Preferences dialog.
+!endif
+
+!include $(CONFIGFILE)
+
+# Simulation kernel and user interface libraries
+OMNETPP_LIB_SUBDIR = $(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
+OMNETPP_LIBS = /libpath:"$(OMNETPP_LIB_SUBDIR)" /libpath:"$(OMNETPP_LIB_DIR)" envir$D.lib $(KERNEL_LIBS) $(SYS_LIBS)
+
+COPTS = $(CFLAGS)  $(INCLUDE_PATH) -I$(OMNETPP_INCL_DIR)
+MSGCOPTS = $(INCLUDE_PATH)
+
+#------------------------------------------------------------------------------
+# User-supplied makefile fragment(s)
+# >>>
+# <<<
+#------------------------------------------------------------------------------
+
+# Main target
+all: $(TARGET)
+
+$(TARGET) : $O/$(TARGET)
+	copy $(O:/=\)\$(TARGET) .
+	-copy $(O:/=\)\$(TARGET).manifest . >NUL
+	-copy $(O:/=\)\$(TARGET:.dll=.lib) . >NUL
+
+$O/$(TARGET): $(OBJS)  $(EXTRA_OBJS) Makefile.vc
+	-@md $(O:/=\) 2>nul
+	$(SHLIB_LD) /out:$O/$(TARGET)  $(OBJS) $(EXTRA_OBJS) $(LIBS) $(OMNETPP_LIBS) $(LDFLAGS)
+
+.SUFFIXES: .cc
+
+{.}.cc{$O}.obj:
+	-@md $(O:/=\) 2>nul
+	$(CXX) -c $(COPTS) /Fo"$@" -Tp $<
+
+{.}.cc{$O/.}.obj:
+	-@md $(O:/=\)\. 2>nul
+	$(CXX) -c $(COPTS) /Fo"$@" -Tp $<
+
+Job_m.cc Job_m.h : Job.msg
+	$(MSGC:/=\) -s _m.cc $(MSGCOPTS) Job.msg
+
+msgheaders: $(MSGFILES:.msg=_m.h)
+
+clean:
+	-rmdir /s /q $(O:/=\) 2>nul
+	-del $(VC_AUX_FILES) 2>nul
+	-del $(TARGET) $(TARGET:.dll=.exe) $(TARGET:.dll=.lib) 2>nul
+	-del .\*_m.cc .\*_m.h 2>nul
+
+depend:
+	$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile.vc -P^$O/ -- $(MSG_CC_FILES)  ./*.cc
+
+# DO NOT DELETE THIS LINE -- make depend depends on it.
+$O/Router.obj: Router.cc \
+	Router.h \
+	QueueingDefs.h
+$O/Delay.obj: Delay.cc \
+	Job_m.h \
+	QueueingDefs.h \
+	Delay.h \
+	Job.h
+$O/PassiveQueue.obj: PassiveQueue.cc \
+	Job_m.h \
+	PassiveQueue.h \
+	IPassiveQueue.h \
+	QueueingDefs.h \
+	SelectionStrategies.h \
+	Job.h
+$O/ResourceBasedQueue.obj: ResourceBasedQueue.cc \
+	Job_m.h \
+	ResourceBasedQueue.h \
+	QueueingDefs.h \
+	IResourcePool.h \
+	Job.h
+$O/Allocate.obj: Allocate.cc \
+	Job_m.h \
+	QueueingDefs.h \
+	Allocate.h \
+	ResourcePool.h \
+	IResourcePool.h \
+	Job.h
+$O/Fork.obj: Fork.cc \
+	Job_m.h \
+	Fork.h \
+	QueueingDefs.h \
+	Job.h
+$O/JobList.obj: JobList.cc \
+	Job_m.h \
+	JobList.h \
+	QueueingDefs.h \
+	Job.h
+$O/Merge.obj: Merge.cc \
+	QueueingDefs.h \
+	Merge.h
+$O/SelectionStrategies.obj: SelectionStrategies.cc \
+	PassiveQueue.h \
+	IPassiveQueue.h \
+	Server.h \
+	IServer.h \
+	QueueingDefs.h \
+	SelectionStrategies.h
+$O/Job.obj: Job.cc \
+	Job_m.h \
+	JobList.h \
+	QueueingDefs.h \
+	Job.h
+$O/Job_m.obj: Job_m.cc \
+	Job_m.h \
+	QueueingDefs.h
+$O/Server.obj: Server.cc \
+	Job_m.h \
+	IPassiveQueue.h \
+	Server.h \
+	IServer.h \
+	QueueingDefs.h \
+	SelectionStrategies.h \
+	Job.h
+$O/Queue.obj: Queue.cc \
+	Job_m.h \
+	Queue.h \
+	QueueingDefs.h \
+	Job.h
+$O/Classifier.obj: Classifier.cc \
+	Job_m.h \
+	QueueingDefs.h \
+	Job.h \
+	Classifier.h
+$O/Join.obj: Join.cc \
+	Job_m.h \
+	QueueingDefs.h \
+	Job.h \
+	Join.h
+$O/Clone.obj: Clone.cc \
+	Job_m.h \
+	QueueingDefs.h \
+	Job.h \
+	Clone.h
+$O/Deallocate.obj: Deallocate.cc \
+	Deallocate.h \
+	QueueingDefs.h \
+	ResourcePool.h \
+	IResourcePool.h
+$O/Source.obj: Source.cc \
+	Job_m.h \
+	QueueingDefs.h \
+	Source.h \
+	Job.h
+$O/Sink.obj: Sink.cc \
+	Job_m.h \
+	Sink.h \
+	QueueingDefs.h \
+	Job.h
+$O/ResourcePool.obj: ResourcePool.cc \
+	QueueingDefs.h \
+	ResourcePool.h \
+	IResourcePool.h
+

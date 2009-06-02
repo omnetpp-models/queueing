@@ -1,0 +1,5 @@
+- make it an error when a parent Job gets killed? problem: what about shutdown-time???
+- support server preempt/resume!  
+- all queueserver-like modules to be derived from an abstract base (see inet/base!)
+- use interfaces for inter-module method calls
+
