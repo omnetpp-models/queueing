@@ -2,4 +2,13 @@
 - support server preempt/resume!  
 - all queueserver-like modules to be derived from an abstract base (see inet/base!)
 - use interfaces for inter-module method calls
+- Job should be IJob and only IJob should be used in the lib. Everybody is free to implement the interface
+- modules that can, compare, modify message attributes (in a generic way. implement LUA scripting?)
+- doc: write a correct documentation. note that only IDEAL channel should be used in 
+  the projects. If delay has to be modeled: Use a Delay block, or an (active) Queue with 
+  unlimited/limited queue size
+- In general it would be great if module parameters could reference Job parameters (i.e. a Servers
+  processing time could be calculated based on message length)
+    
+ 
 
