@@ -10,10 +10,9 @@
 package org.omnetpp.queueing;
 
 //
-// Sends the messages to different outputs depending on messages type or priority.
-// If no output found for a message, it is sent to the "rest" gate.
-// Messages with type = i will be sent to out[i] (if dispatchField = type).
-// Messages with priority = i will be sent to out[i] (if dispatchField = priority).
+// Sends the messages to different outputs depending on a numeric message field.
+// If no output gate is found for a message, it is sent to the "rest" gate.
+// Messages with field value "i" will be sent to out[i].
 //
 // @author rhornig
 //
@@ -22,7 +21,7 @@ simple Classifier
     parameters:
         @group(Queueing);
         @display("i=block/classifier");
-        string dispatchField @enum("type","priority") = default("type");
+        string dispatchField = default("kind");
     gates:
         input in[];
         output out[];

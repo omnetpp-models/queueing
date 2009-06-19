@@ -2,7 +2,7 @@
 # OMNeT++/OMNEST Makefile for libqueueinglibext
 #
 # This file was generated with the command:
-#  opp_makemake -f --make-so -I../queueinglib -L../queueinglib/out/gcc-debug -lqueueinglib -KQUEUEINGLIB_PROJ=../queueinglib
+#  opp_makemake -f --deep --make-so -O out -I../queueinglib -L../queueinglib/out/$(CONFIGNAME) -lqueueinglib -KQUEUEINGLIB_PROJ=../queueinglib
 #
 
 # Name of target to be created (-o option)
@@ -15,8 +15,8 @@ INCLUDE_PATH = -I../queueinglib -I.
 EXTRA_OBJS =
 
 # Additional libraries (-L, -l options)
-LIBS = -L../queueinglib/out/gcc-debug  -lqueueinglib
-LIBS += -Wl,-rpath,`abspath ../queueinglib/out/gcc-debug`
+LIBS = -L../queueinglib/out/$(CONFIGNAME)  -lqueueinglib
+LIBS += -Wl,-rpath,`abspath ../queueinglib/out/$(CONFIGNAME)`
 
 # Output directory
 PROJECT_OUTPUT_DIR = out
@@ -101,6 +101,7 @@ depend:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/SinkExt.o: SinkExt.cc \
-  ../queueinglib/QueueingDefs.h \
-  ./SinkExt.h \
-  ../queueinglib/Sink.h
+	$(QUEUEINGLIB_PROJ)/Sink.h \
+	$(QUEUEINGLIB_PROJ)/QueueingDefs.h \
+	SinkExt.h
+

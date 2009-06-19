@@ -27,7 +27,7 @@ Job *SourceBase::createJob()
     char buf[80];
     sprintf(buf, "%.60s-%d", jobName.c_str(), ++jobCounter);
     Job *job = new Job(buf);
-    job->setKind(par("jobType"));
+    job->setKind(par("jobKind"));
     job->setPriority(par("jobPriority"));
     return job;
 }

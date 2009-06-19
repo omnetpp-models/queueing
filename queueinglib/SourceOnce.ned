@@ -23,7 +23,7 @@ simple SourceOnce
         int numJobs = default(1);            // number of jobs to generate
         double time @unit(s) = default(0s);  // when to generate
         string jobName = default("job");     // the base name of the generated job (will be the module name if left empty)
-        volatile int jobType = default(0);   // the type attribute of the created job (used by classifers and other modules)
+        volatile int jobKind = default(0);   // the kind attribute of the created job (used by classifers and other modules)
         volatile int jobPriority = default(0);  // priority of the job
     gates:
         output out;

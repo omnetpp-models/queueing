@@ -7,6 +7,7 @@
 // `license' for details on this and other legal matters.
 //
 
+#include "QueueingUtils.h"
 #include "Classifier.h"
 #include "Job.h"
 
@@ -22,14 +23,7 @@ void Classifier::initialize()
 void Classifier::handleMessage(cMessage *msg)
 {
     Job *job = check_and_cast<Job *>(msg);
-    int outGateIndex = -1;
-    if (strcmp(dispatchField, "type") == 0)
-        outGateIndex = job->getKind();
-    else if (strcmp(dispatchField, "priority") == 0)
-        outGateIndex = job->getPriority();
-    else
-        error("invalid dispatchField parameter, must be \"type\" or \"priority\"");
-    // TODO we could look for the value in the dynamically added parameters too
+    int outGateIndex =  getFieldAsLong(msg, dispatchField);
 
     if (outGateIndex < 0 || outGateIndex >= gateSize("out"))
         send(job, "rest");

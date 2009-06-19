@@ -59,7 +59,7 @@ CONFIGFILE = $(OMNETPP_CONFIGFILE)
 !elseif "$(OMNETPP_ROOT)"!=""
 CONFIGFILE = $(OMNETPP_ROOT)/configuser.vc
 !else
-CONFIGFILE = /home/rhornig/omnetpp\configuser.vc
+CONFIGFILE = /home/rhornig/omnetpp-4.0/\configuser.vc
 !endif
 
 !if !exist($(CONFIGFILE))
@@ -70,7 +70,7 @@ CONFIGFILE = /home/rhornig/omnetpp\configuser.vc
 
 # Simulation kernel and user interface libraries
 OMNETPP_LIB_SUBDIR = $(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
-OMNETPP_LIBS = /libpath:"$(OMNETPP_LIB_SUBDIR)" /libpath:"$(OMNETPP_LIB_DIR)" envir$D.lib $(KERNEL_LIBS) $(SYS_LIBS)
+OMNETPP_LIBS = /libpath:"$(OMNETPP_LIB_SUBDIR)" /libpath:"$(OMNETPP_LIB_DIR)" oppenvir$D.lib $(KERNEL_LIBS) $(SYS_LIBS)
 
 COPTS = $(CFLAGS)  $(INCLUDE_PATH) -I$(OMNETPP_INCL_DIR)
 MSGCOPTS = $(INCLUDE_PATH)
@@ -113,6 +113,9 @@ clean:
 	-del $(VC_AUX_FILES) 2>nul
 	-del $(TARGET) $(TARGET:.dll=.exe) $(TARGET:.dll=.lib) 2>nul
 	-del .\*_m.cc .\*_m.h 2>nul
+
+cleanall: clean
+	-rmdir /s /q $(PROJECT_OUTPUT_DIR:/=\) 2>nul
 
 depend:
 	$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile.vc -P^$O/ -- $(MSG_CC_FILES)  ./*.cc
@@ -202,16 +205,16 @@ $O/Clone.obj: Clone.cc \
 	QueueingDefs.h \
 	Job.h \
 	Clone.h
-$O/Deallocate.obj: Deallocate.cc \
-	Deallocate.h \
-	QueueingDefs.h \
-	ResourcePool.h \
-	IResourcePool.h
 $O/Source.obj: Source.cc \
 	Job_m.h \
 	QueueingDefs.h \
 	Source.h \
 	Job.h
+$O/Deallocate.obj: Deallocate.cc \
+	Deallocate.h \
+	QueueingDefs.h \
+	ResourcePool.h \
+	IResourcePool.h
 $O/Sink.obj: Sink.cc \
 	Job_m.h \
 	Sink.h \

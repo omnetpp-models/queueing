@@ -19,10 +19,8 @@
 <configuration artifactName="queueinglib" buildProperties="" description="" id="org.omnetpp.cdt.msvc.config.debug.1723648907" name="msvc-debug" parent="org.omnetpp.cdt.msvc.config.debug">
 <folderInfo id="org.omnetpp.cdt.msvc.config.debug.1723648907." name="/" resourcePath="">
 <toolChain id="org.omnetpp.cdt.msvc.toolchain.debug.79888552" name="Microsoft Visual C++ for OMNeT++" superClass="org.omnetpp.cdt.msvc.toolchain.debug">
-<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.PE" id="org.omnetpp.cdt.msvc.targetPlatform.22356873" name="Windows" osList="win32" superClass="org.omnetpp.cdt.msvc.targetPlatform"/>
-<builder id="org.omnetpp.cdt.msvc.builder.debug.1485107268" managedBuildOn="true" name="OMNeT++ Make Builder (opp_nmakemake - for MS Visual C++).msvc-debug" superClass="org.omnetpp.cdt.msvc.builder.debug"/>
-<tool id="org.eclipse.cdt.msvc.cl.472625233" name="C/C++ Compiler (cl)" superClass="org.eclipse.cdt.msvc.cl"/>
-<tool id="org.eclipse.cdt.msvc.link.1689025338" name="Linker (link)" superClass="org.eclipse.cdt.msvc.link"/>
+<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.PE" id="org.omnetpp.cdt.msvc.targetPlatform.22356873" name="Windows" osList="win32"/>
+<builder id="org.omnetpp.cdt.msvc.builder.debug.1485107268" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="OMNeT++ Make Builder (opp_nmakemake - not supported)" superClass="org.omnetpp.cdt.msvc.builder.debug"/>
 </toolChain>
 </folderInfo>
 </configuration>
@@ -503,6 +501,8 @@
 </scannerConfigBuildInfo>
 </storageModule>
 <storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
+<storageModule moduleId="org.eclipse.cdt.core.language.mapping"/>
+<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
 </cconfiguration>
 <cconfiguration id="org.omnetpp.cdt.msvc.config.release.1973346394">
 <storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="org.omnetpp.cdt.msvc.config.release.1973346394" moduleId="org.eclipse.cdt.core.settings" name="msvc-release">
@@ -1004,6 +1004,8 @@
 </scannerConfigBuildInfo>
 </storageModule>
 <storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
+<storageModule moduleId="org.eclipse.cdt.core.language.mapping"/>
+<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
 </cconfiguration>
 <cconfiguration id="org.omnetpp.cdt.gnu.config.debug.682580143">
 <storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="org.omnetpp.cdt.gnu.config.debug.682580143" moduleId="org.eclipse.cdt.core.settings" name="gcc-debug">
@@ -1023,7 +1025,11 @@
 <folderInfo id="org.omnetpp.cdt.gnu.config.debug.682580143." name="/" resourcePath="">
 <toolChain id="org.omnetpp.cdt.gnu.toolchain.debug.1939661317" name="GCC for OMNeT++" superClass="org.omnetpp.cdt.gnu.toolchain.debug">
 <targetPlatform binaryParser="org.eclipse.cdt.core.ELF;org.eclipse.cdt.core.MachO;org.eclipse.cdt.core.PE" id="org.omnetpp.cdt.targetPlatform.1536968330" isAbstract="false" name="Windows, Linux, Mac" osList="win32,linux,macosx" superClass="org.omnetpp.cdt.targetPlatform"/>
-<builder id="org.omnetpp.cdt.gnu.builder.debug.980214138" managedBuildOn="true" name="OMNeT++ Make Builder (opp_makemake).gcc-debug" superClass="org.omnetpp.cdt.gnu.builder.debug"/>
+<builder id="org.omnetpp.cdt.gnu.builder.debug.980214138" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="OMNeT++ Make Builder (opp_makemake)" superClass="org.omnetpp.cdt.gnu.builder.debug">
+<outputEntries>
+<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name=""/>
+</outputEntries>
+</builder>
 <tool id="cdt.managedbuild.tool.gnu.archiver.base.699650058" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.base"/>
 <tool id="cdt.managedbuild.tool.gnu.cpp.compiler.base.1478640720" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.base">
 <inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.300292027" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
@@ -1521,6 +1527,8 @@
 </scannerConfigBuildInfo>
 </storageModule>
 <storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
+<storageModule moduleId="org.eclipse.cdt.core.language.mapping"/>
+<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
 </cconfiguration>
 <cconfiguration id="org.omnetpp.cdt.gnu.config.release.1540381225">
 <storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="org.omnetpp.cdt.gnu.config.release.1540381225" moduleId="org.eclipse.cdt.core.settings" name="gcc-release">
@@ -1540,7 +1548,7 @@
 <folderInfo id="org.omnetpp.cdt.gnu.config.release.1540381225." name="/" resourcePath="">
 <toolChain id="org.omnetpp.cdt.gnu.toolchain.release.500571760" name="GCC for OMNeT++" superClass="org.omnetpp.cdt.gnu.toolchain.release">
 <targetPlatform binaryParser="org.eclipse.cdt.core.ELF;org.eclipse.cdt.core.MachO;org.eclipse.cdt.core.PE" id="org.omnetpp.cdt.targetPlatform.1470893528" isAbstract="false" name="Windows, Linux, Mac" osList="win32,linux,macosx" superClass="org.omnetpp.cdt.targetPlatform"/>
-<builder id="org.omnetpp.cdt.gnu.builder.release.1263263332" managedBuildOn="true" name="OMNeT++ Make Builder (opp_makemake).gcc-release" superClass="org.omnetpp.cdt.gnu.builder.release"/>
+<builder id="org.omnetpp.cdt.gnu.builder.release.1263263332" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="OMNeT++ Make Builder (opp_makemake)" superClass="org.omnetpp.cdt.gnu.builder.release"/>
 <tool id="cdt.managedbuild.tool.gnu.archiver.base.179537040" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.base"/>
 <tool id="cdt.managedbuild.tool.gnu.cpp.compiler.base.133989203" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.base">
 <inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.556926537" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
@@ -2038,6 +2046,8 @@
 </scannerConfigBuildInfo>
 </storageModule>
 <storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
+<storageModule moduleId="org.eclipse.cdt.core.language.mapping"/>
+<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
 </cconfiguration>
 </storageModule>
 <storageModule moduleId="cdtBuildSystem" version="4.0.0">
