@@ -44,7 +44,6 @@ OBJS = \
     $O/Delay.o \
     $O/Join.o \
     $O/Source.o \
-    $O/PacketSender.o \
     $O/Job_m.o
 
 # Message files
