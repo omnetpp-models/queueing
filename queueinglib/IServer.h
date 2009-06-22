@@ -24,8 +24,18 @@ class QUEUEING_API IServer
 {
     public:
         virtual ~IServer() { };
-        // indicate whether the service is currently idle (ie. no processing is done currently)
+
+        /**
+         * Indicate whether the service is currently idle (ie. no processing is done currently)
+         */
         virtual bool isIdle() = 0;
+
+        /**
+         * Reserve the server for processing.
+         * After receiving this call the server should report itself as busy (even if
+         * processing has not been actually started), to prevent race conditions.
+         */
+        virtual void reserve() = 0;
 };
 
 }; //namespace

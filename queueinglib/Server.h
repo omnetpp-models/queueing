@@ -33,6 +33,7 @@ class QUEUEING_API Server : public cSimpleModule, public IServer
 
         simtime_t prevEventTimeStamp;
         Job *jobServiced;
+        bool reserved;
         cMessage *endServiceMsg;
 
     public:
@@ -47,6 +48,7 @@ class QUEUEING_API Server : public cSimpleModule, public IServer
 
     public:
         virtual bool isIdle();
+        virtual void reserve();
 };
 
 }; //namespace

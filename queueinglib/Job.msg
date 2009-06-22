@@ -17,7 +17,7 @@ cplusplus {{
 //
 // Job message definition for queueing framework
 //
-message Job
+packet Job
 {
     @customize(true);
     int priority;                // queueing priority

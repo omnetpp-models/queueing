@@ -8,6 +8,7 @@
 //
 
 #include "PassiveQueue.h"
+#include "IServer.h"
 #include "Job.h"
 
 namespace queueing {
@@ -69,6 +70,10 @@ void PassiveQueue::handleMessage(cMessage *msg)
     }
     else if (length() == 0)
     {
+    	// we are sending a job on our own. We should reserve the server or other events running
+    	// parallel with us will also send jobs and the server will not be able to process them
+    	cModule *serverModule = selectionStrategy->selectableGate(k)->getOwnerModule();
+    	check_and_cast<IServer *>(serverModule)->reserve();
         // send through without queueing
         send(job, "out", k);
     }
@@ -122,6 +127,8 @@ void PassiveQueue::request(int gateIndex)
     job->setTotalQueueingTime(job->getTotalQueueingTime() + d);
     queueingTimeVector.record(d);
 
+    // NOTE: the server has requested a job from us. We do not have to reserve() that server because
+    // it has already reserved itself.
     send(job, "out", gateIndex);
 
     // statistics

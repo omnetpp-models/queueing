@@ -20,6 +20,7 @@ Server::Server()
 {
     selectionStrategy = NULL;
     jobServiced = NULL;
+    reserved = false;
     endServiceMsg = NULL;
 }
 
@@ -37,6 +38,7 @@ void Server::initialize()
 
     endServiceMsg = new cMessage("end-service");
     jobServiced = NULL;
+    reserved = false;
     selectionStrategy = SelectionStrategy::create(par("fetchingAlgorithm"), this, true);
     if (!selectionStrategy)
         error("invalid selection strategy");
@@ -49,11 +51,12 @@ void Server::handleMessage(cMessage *msg)
 
     if (msg==endServiceMsg)
     {
-        ASSERT(jobServiced!=NULL);
+        ASSERT(jobServiced!=NULL && reserved);
         simtime_t d = simTime() - endServiceMsg->getSendingTime();
         jobServiced->setTotalServiceTime(jobServiced->getTotalServiceTime() + d);
         send(jobServiced, "out");
         jobServiced = NULL;
+        reserved = false;
 
         if (ev.isGUI()) getDisplayString().setTagArg("i",1,"");
 
@@ -64,6 +67,7 @@ void Server::handleMessage(cMessage *msg)
             EV << "requesting job from queue " << k << endl;
             cGate *gate = selectionStrategy->selectableGate(k);
             check_and_cast<IPassiveQueue *>(gate->getOwnerModule())->request(gate->getIndex());
+            reserved = true;
         }
     }
     else
@@ -71,7 +75,11 @@ void Server::handleMessage(cMessage *msg)
         if (jobServiced)
             error("job arrived while already servicing one");
 
+        if (!reserved)
+            error("job arrived but the server was not correctly reserved");
+
         jobServiced = check_and_cast<Job *>(msg);
+        reserved = true;
 
         simtime_t serviceTime = par("serviceTime");
         scheduleAt(simTime()+serviceTime, endServiceMsg);
@@ -87,8 +95,19 @@ void Server::finish()
 
 bool Server::isIdle()
 {
-    return jobServiced == NULL;
+    return !reserved;
 }
+
+void Server::reserve()
+{
+    Enter_Method("reserve()");
+
+    if (reserved)
+		error("trying to reserve a server which is already reserved");
+
+    reserved = true;
+}
+
 
 }; //namespace
 

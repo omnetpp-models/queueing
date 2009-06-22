@@ -26,7 +26,7 @@ class QUEUEING_API SourceBase : public cSimpleModule
         std::string jobName;
     protected:
         virtual void initialize();
-        virtual Job *createJob();
+        virtual cMessage *createJob();
         virtual void finish();
 };
 

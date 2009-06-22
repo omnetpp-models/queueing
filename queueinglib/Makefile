@@ -44,6 +44,7 @@ OBJS = \
     $O/Delay.o \
     $O/Join.o \
     $O/Source.o \
+    $O/PacketSender.o \
     $O/Job_m.o
 
 # Message files
@@ -133,6 +134,7 @@ $O/PassiveQueue.o: PassiveQueue.cc \
 	Job_m.h \
 	PassiveQueue.h \
 	IPassiveQueue.h \
+	IServer.h \
 	QueueingDefs.h \
 	SelectionStrategies.h \
 	Job.h
@@ -149,14 +151,14 @@ $O/Allocate.o: Allocate.cc \
 	ResourcePool.h \
 	IResourcePool.h \
 	Job.h
-$O/Fork.o: Fork.cc \
-	Job_m.h \
-	Fork.h \
-	QueueingDefs.h \
-	Job.h
 $O/JobList.o: JobList.cc \
 	Job_m.h \
 	JobList.h \
+	QueueingDefs.h \
+	Job.h
+$O/Fork.o: Fork.cc \
+	Job_m.h \
+	Fork.h \
 	QueueingDefs.h \
 	Job.h
 $O/Merge.o: Merge.cc \
@@ -206,17 +208,13 @@ $O/Clone.o: Clone.cc \
 	QueueingDefs.h \
 	Job.h \
 	Clone.h
-$O/Deallocate.o: Deallocate.cc \
-	Deallocate.h \
-	QueueingDefs.h \
-	ResourcePool.h \
-	IResourcePool.h
 $O/Source.o: Source.cc \
 	Job_m.h \
 	QueueingDefs.h \
 	Source.h \
 	Job.h
-$O/ResourcePool.o: ResourcePool.cc \
+$O/Deallocate.o: Deallocate.cc \
+	Deallocate.h \
 	QueueingDefs.h \
 	ResourcePool.h \
 	IResourcePool.h
@@ -225,4 +223,10 @@ $O/Sink.o: Sink.cc \
 	Sink.h \
 	QueueingDefs.h \
 	Job.h
+$O/ResourcePool.o: ResourcePool.cc \
+	QueueingDefs.h \
+	ResourcePool.h \
+	IResourcePool.h
+$O/PacketSender.o: PacketSender.cc \
+	PacketSender.h
 

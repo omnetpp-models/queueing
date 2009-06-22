@@ -22,7 +22,7 @@ void SourceBase::initialize()
         jobName = getName();
 }
 
-Job *SourceBase::createJob()
+cMessage *SourceBase::createJob()
 {
     char buf[80];
     sprintf(buf, "%.60s-%d", jobName.c_str(), ++jobCounter);
@@ -61,8 +61,7 @@ void Source::handleMessage(cMessage *msg)
         // reschedule the timer for the next message
         scheduleAt(simTime() + par("interArrivalTime").doubleValue(), msg);
 
-        Job *job = createJob();
-        send(job, "out");
+        send(createJob(), "out");
     }
     else
     {
@@ -89,10 +88,7 @@ void SourceOnce::handleMessage(cMessage *msg)
 
     int n = par("numJobs");
     for (int i=0; i<n; i++)
-    {
-        Job *job = createJob();
-        send(job, "out");
-    }
+        send(createJob(), "out");
 }
 
 }; //namespace
