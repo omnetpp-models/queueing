@@ -103,6 +103,7 @@ void MAC::handleMessage(cMessage *msg)
 	        if (!ethOutGate->isPathOK()) {
 	            EV << "dropping frame. " << getParentModule()->getFullName() << " is not connected. " << endl;
 	            scheduleAt(simTime(), endServiceMsg);  // reschedule the message for now, try to get an other frame
+	            delete msg;
 	            return;
 	        }
 
@@ -114,6 +115,7 @@ void MAC::handleMessage(cMessage *msg)
 	        if (drChan->isDisabled()) {
 	            EV << "dropping frame. Channel is disabled. " << endl;
 	            scheduleAt(simTime(), endServiceMsg);  // reschedule the message for now, try to get an other frame
+	            delete msg;
 	            return;
 	        }
 

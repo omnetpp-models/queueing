@@ -25,8 +25,12 @@ void Classifier::handleMessage(cMessage *msg)
     Job *job = check_and_cast<Job *>(msg);
     int outGateIndex =  getFieldAsLong(msg, dispatchField);
 
-    if (outGateIndex < 0 || outGateIndex >= gateSize("out"))
+    if (outGateIndex < 0 || outGateIndex >= gateSize("out")) {
+    	if (!gate("rest")->isPathOK())
+    		error("cannot classify job and the 'rest' gate is not connected: %s contains %i but the out gate size is %i",dispatchField, outGateIndex, gateSize("out"));
+
         send(job, "rest");
+    }
     else
         send(job, "out", outGateIndex);
 }

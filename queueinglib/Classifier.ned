@@ -25,5 +25,5 @@ simple Classifier
     gates:
         input in[];
         output out[];
-        output rest;     // messages that were not classified
+        output rest @loose;     // messages that were not classified
 }

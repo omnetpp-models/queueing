@@ -17,13 +17,15 @@ package org.omnetpp.queueing.afdx;
 
 import org.omnetpp.queueing.Clone;
 import org.omnetpp.queueing.Sink;
+import org.omnetpp.queueing.PassiveQueue;
+import org.omnetpp.queueing.Merge;
 //
 // This module represents an EndSystem device in an AFDX network. It has two 
 // separate ethernet interfaces which should be attached to different networks
 //
 module EndSystem
 {
-    @display("i=device/device");
+    @display("i=device/device;bgb=413,287");
     gates:
         inout ethPortA @labels(eth100);
         inout ethPortB @labels(eth100);
@@ -35,12 +37,32 @@ module EndSystem
             @display("p=193,62");
         }
         sink: Sink {
-            @display("p=280,62");
+            @display("p=173,227");
+        }
+        macB: MAC {
+            @display("p=351,150");
+        }
+        macA: MAC {
+            @display("p=351,75");
+        }
+        txQueueA: PassiveQueue {
+            @display("p=272,75");
+        }
+        txQueueB: PassiveQueue {
+            @display("p=272,150");
+        }
+        merge: Merge {
+            @display("p=284,227");
         }
     connections:
         trafficGen1.out --> redundancy.in++;
-        redundancy.out++ --> ethPortA$o;
-        redundancy.out++ --> ethPortB$o;
-        ethPortA$i --> sink.in++;
-        ethPortB$i --> sink.in++;
+        redundancy.out++ --> txQueueB.in++;
+        redundancy.out++ --> txQueueA.in++;
+        ethPortA <--> macA.eth;
+        ethPortB <--> macB.eth;
+        txQueueA.out++ --> macA.in++;
+        txQueueB.out++ --> macB.in++;
+        macA.out --> merge.in++;
+        macB.out --> merge.in++;
+        merge.out --> sink.in++;
 }

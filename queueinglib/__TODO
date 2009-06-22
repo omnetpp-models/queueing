@@ -9,8 +9,9 @@
   unlimited/limited queue size
 - In general it would be great if module parameters could reference Job parameters (i.e. a Servers
   processing time could be calculated based on message length)
-- a more generic classifier block (and a filter as special case)  (could filter classify, on any message attribute)
-- clone: duplicate the messages ONLY on the specified output links i.e. "0 4 7 11" "*" would clone on all 
+- clone: duplicate the messages ONLY on the specified output links i.e. "0 4 7 11" "*" would clone on all
+- classifier: allow if rest gate to be unconnected. in this case just throw an error? 
+ 
     
  
 

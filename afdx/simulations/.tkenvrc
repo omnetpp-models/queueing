@@ -1,7 +1,0 @@
-# Partial Tkenv config file -- see $HOME/.tkenvrc as well
-inspector "AFDXExampleNetwork.switchA.switchFabric" "SwitchFabric" "2" "626x283+451+459"
-inspector "AFDXExampleNetwork" "AFDXExampleNetwork" "2" "607x347+22+82"
-inspector "AFDXExampleNetwork.switchA.switchPort[1]" "SwitchPort" "2" "611x339+655+76"
-inspector "AFDXExampleNetwork.switchA" "Switch" "2" "607x597+98+110"
-inspector "AFDXExampleNetwork.ES0" "EndSystem" "2" "607x221+651+291"
-

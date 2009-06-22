@@ -35,6 +35,7 @@ module SwitchFabric
     submodules:
         priorityClassifier: Classifier {
             @display("p=60,82");
+            dispatchField = "priority";
             gates:
                 out[2];
         }
@@ -54,9 +55,6 @@ module SwitchFabric
             gates:
                 out[sizeof(port)];
         }
-        sink: Sink {
-            @display("p=60,145");
-        }
     connections:
         for i=0..sizeof(port)-1 {
             port$i[i] --> priorityClassifier.in++;
@@ -71,5 +69,4 @@ module SwitchFabric
         for i=0..sizeof(port)-1 {
             router.out[i] --> port$o[i];
         }
-        priorityClassifier.rest --> sink.in++;
 }
