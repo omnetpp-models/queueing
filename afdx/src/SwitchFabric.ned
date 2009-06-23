@@ -50,8 +50,8 @@ module SwitchFabric
             gates:
                 in[2];
         }
-        router: Clone {
-            @display("p=342,82");
+        router: VLRouter {
+            @display("p=338,82");
             gates:
                 out[sizeof(port)];
         }

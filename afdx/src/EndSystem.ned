@@ -25,44 +25,56 @@ import org.omnetpp.queueing.Merge;
 //
 module EndSystem
 {
-    @display("i=device/device;bgb=413,287");
+    @display("i=device/device;bgb=489,298");
     gates:
         inout ethPortA @labels(eth100);
         inout ethPortB @labels(eth100);
     submodules:
-        trafficGen1: AFDXMessageSource {
-            @display("p=86,62");
+        trafficSource1: AFDXMessageSource {
+            @display("p=59,44");
         }
-        redundancy: Clone {
-            @display("p=193,62");
-        }
-        sink: Sink {
-            @display("p=173,227");
+        trafficSink: Sink {
+            @display("p=59,228");
         }
         macB: MAC {
-            @display("p=351,150");
+            @display("p=450,189");
         }
         macA: MAC {
-            @display("p=351,75");
+            @display("p=450,119");
         }
         txQueueA: PassiveQueue {
-            @display("p=272,75");
+            @display("p=356,44");
         }
         txQueueB: PassiveQueue {
-            @display("p=272,150");
+            @display("p=356,119");
         }
-        merge: Merge {
-            @display("p=284,227");
+        integrityCheckerA: IntegrityChecker {
+            @display("p=356,189");
+        }
+        integrityCheckerB: IntegrityChecker {
+            @display("p=356,257");
+        }
+        regulatorLogic: RegulatorLogic {
+            @display("p=155,44");
+        }
+        redundancyChecker: RedundancyChecker {
+            @display("p=242,228");
+        }
+        redundancyController: RedundancyController {
+            @display("p=254,83");
         }
     connections:
-        trafficGen1.out --> redundancy.in++;
-        redundancy.out++ --> txQueueB.in++;
-        redundancy.out++ --> txQueueA.in++;
         ethPortA <--> macA.eth;
         ethPortB <--> macB.eth;
         txQueueA.out++ --> macA.in++;
         txQueueB.out++ --> macB.in++;
-        macA.out --> merge.in++;
-        macB.out --> merge.in++;
-        merge.out --> sink.in++;
+        macA.out --> integrityCheckerA.in;
+        macB.out --> integrityCheckerB.in;
+        integrityCheckerA.out --> redundancyChecker.inA;
+        integrityCheckerB.out --> redundancyChecker.inB;
+        trafficSource1.out --> regulatorLogic.in;
+        redundancyChecker.out --> trafficSink.in++;
+        regulatorLogic.out --> redundancyController.in++;
+        redundancyController.outA --> txQueueA.in++;
+        redundancyController.outB --> txQueueB.in++;
 }
