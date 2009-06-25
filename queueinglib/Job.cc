@@ -13,6 +13,8 @@
 
 namespace queueing {
 
+Register_Class(Job);
+
 Job::Job(const char *name, int kind, JobList *jobList) : Job_Base(name, kind)
 {
     parent = NULL;
