@@ -30,6 +30,13 @@ void RedundancyChecker::initialize()
 
 void RedundancyChecker::handleMessage(cMessage *msg)
 {
+	// if not enabled just pass through all frmaes received
+	if (!enabled) {
+		send(msg,"out");
+		return;
+	}
+
+	// filter out redundant messages
     AFDXMessage *afdxMsg = check_and_cast<AFDXMessage *>(msg);
     int currSeqNum = afdxMsg->getSeqNum();
 
@@ -39,7 +46,7 @@ void RedundancyChecker::handleMessage(cMessage *msg)
 		delete msg;
 		return;     // frame dropped. do not update the next expected counter
 	}
-		send(msg,"out");
+	send(msg,"out");
 
 	lastFrameReceived = simTime();
     // store the last sequence number.
