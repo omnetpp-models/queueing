@@ -1,0 +1,191 @@
+- Generating / Destroying jobs
+    Source
+      Generate Jobs based on pre set inter-arrival time. It is possible to specify the initial job attributes.
+      The number of jobs to be generated and the job generation start/stop time also can be set.
+    SourceOnce
+      Creates a predefined number of jobs at a defined sim-time ( a special case of Source)
+    SourceWithResource
+      Generates a Job whenever the resource requirement can be fulfilled. The new Job will receive the
+      resources once generated. 
+    Sink
+      Deletes or keeps the received jobs (depending on settings). Gathers statistics like total queueing time,
+      delay, processing time
+
+- Utility
+    JobList 
+      Provides support for inspecting / enumerating jobs in a compound/simple module (based on ownership)
+      Allows the re-parenting of Jobs into an other node (supporting the protocol)
+      An expression can be provided that is evaluated for each job. the resulting job list can be manipulated,
+      moved to different parent etc.
+    Resource (class)
+      Represent a type,class of resource. It inherits its type and class from its owner (the pool it belongs to)
+      has a reference to the owner pool, and the borrower (which is a job). It can return the amount of resource
+      it represents, and the sim-time when the resource was acquired (this info can be used to calculate the
+      amount of processing that was done on an active resource)
+    Job (message)
+      Has some basic parameters. (priority, name, kind etc). 
+      Tags can be attached, removed from Job
+      Parameters and other data can be added dynamically (i.e. loop variables, statistic counters)
+      Resources can be added, removed (with names)
+    Join 
+      Supports to merge several incoming connections into a single output connection (Merge)
+      Implement it as a compound module (less overhead), with an inner connection loop to attach all
+      incoming gates to the output
+    Set
+      Set/change/add a specific parameter in the job. This can be a simple parameter with the current timestamp 
+      that can be used by the statistics module, to gather delay and processing times. 
+    Statistic node.
+      Does not do any processing but can be used to measure throughput, or delay, jitter of jobs between two points
+      in the model. A separate (SET) module can time stamp (and tag) incoming jobs in the model. The Statistics module measures
+      the delay, processing time since the given tag. 
+    
+- ResourcePools
+      Can notify all resource consumers waiting on it about the resource changes. 
+      ResourceAllocators can test and allocate a resource if needed.
+      It is possible to specify the initial, and maximum amount of resources.
+      It is possible to set an AllocatorSelectionStrategy in what order the the waiting modules will be notified.
+      The strategy can use any info to set a specific order (i.e. it can use the original resource allocation parameters
+      the amount of resource available, or info from the resource allocator itself.
+      ResourceAllocators can hook a notify listener to any resource change.
+      
+	LogicalResource
+	  An unordered, and identityless resource. Its value can be set (by direct method calls), and it
+	  notifies all its resource listeners. If a resource is available and granted, it is not
+	  removed from the resource. This can be used to create logical expressions.
+	  Parameters: amount (integer), class
+	  Example: several Jobs are waiting for a specific software. Once the software is available, each
+	  job can continue independently because the sw. can be copied  
+	
+	TokenResourcePool
+	  Unordered, without identity. The tokens removed from one pool, can be returned to an other pool
+	  with the same class (and type). Tokens can be returned to a different pool than their original source.
+	  If the pool capacity is not enough, we can what should happen: (error, queue, deallocate 
+      as much as possible, and pass the the job along)    
+	  
+	  Attributes: Class, amount, capacity
+	  Stats: min,max,avg tokens. min,max,avg,count of allocations/deallocations 
+	  
+	AddressableResourcePool
+	  Ordered, addressable resources, with identity. Resource must be returned to the same pool.
+	  Attributes: class, capacity.
+	  Contains a list of non-overlapping memory regions that are reserved. These regions can be splitted / joined,
+	  when the resource is returned to the.
+	  Request: [addr:length] a specific range. 
+	           [:length] any continuous region (firstfit/bestfit)
+	           [addr] a single byte at a specific address
+	           
+	ServerResourcePool
+	  Contains active resources. An active resource does some kind of processing on the receiving job.
+	  When allocation is done, it calculates when the resource grant will expire (based on the work needed)
+	  When the resource is revoked, it notifies the holder to stop using it, and then returns it in the pool
+	  and notifies the resource users waiting for it. Each server resource stores a timestamp when it was
+	  acquired last time, and the duration how long it can be held by the job. The resource can calculate 
+	  the amount of of work, done on the job, once released. 
+	  Active resources can be acquired for a specific amount of work, or a specific amount of time.
+      Resource must be returned to the same pool.
+	  Attributes: capacity, class  
+	  Stats: utilization, min max, avg processor use.
+
+    ResourceCreator 
+      Each incoming job creates the specified number of resources and places it in the pool.
+      
+    ResourceDestroyer
+      An incoming job deletes the specified number of resources. If the amount of resource is not available
+      the node can throw error, or decrease the amount of resources to 0 silently (depending on parameter
+      settings)
+
+    ResourceAllocator
+      An allocate node should be able to specify several resourcePools and an amount of resources needed from each pool.
+      If more than one resource pool is available for the same resource class, a pre configured ResourceSelectionSrategy
+      is used to select which pool will be used to fulfill the resource requirement.
+      The node tries to allocate the requested resources in a single atomic transaction. If cannot allocate all resources
+      the Job is put into a queue (or throws error if configured so, or pass it to the exception gate, or passes
+      to the exception gate ONLY if the queue is limited and is full). 
+      on each resource change notification the module can decide which jobs in what order will be tested against 
+      resource requirements using a JobSelectionStrategy. (a JobSelectionStrategy can even forcibly
+      revoke some resources and grant it to an other job (allowing to implement interrupted jobs (with or
+      without restart), or preemptive scheduling)
+      On each event occurring in the module, all jobs are tested against an exit criteria. If the criteria
+      is met, the Job is sent out on the output. It must be possible to test against whether an active
+      resource has expired. (i.e. certain amount of processing was done on the job)
+      Any jobs allowed to pass will carry the attached resources. Resources are added to the Job as dynamic parameters.
+      Attributes: resource req descriptor like: [resourceClass:amount]... can be attached with AND operator?
+                  a list of used pools (pool name list)  
+		          exit criteria for jobs: msgAttr("progress")=1.0
+		                
+    ResourceDeallocator  
+      A job passing through this gate will release the resources and add them back to the specified pools.
+      You can specify how much resource is added back into each pool. It is possible to return all resources.
+      A pool can hold limited resources, Returning of a resource could result in an overflow.
+      The deallocator either can queue the requests until enough free space is available, or throw an error, or 
+      deallocate as much resource as can fit in the pool and pass the job further.
+      In general you can 
+        - release (put back into the original pool)
+        - destroy (simply eliminate the resource)
+        - migrate to other resource pool (only tokens, with the same class)
+      Attribute: deallocation description (resource name:how much:destnation pool:)
+      destination pool can be: destroy, empty(=original pool), an other pool with the same class (for tokens only)
+      
+- Derived Active Resources
+    Queue
+      A simple (single) processor, with built in (optionally limited) queue. 
+    Delay
+      Server with infinite number of processors (no queueing). The delay (processing) time can be specified.
+
+- Flow control
+    Clone
+      Allows cloning the incoming message on specified output gates. (can clone on all or on some outputs)
+    Router
+      Based on a boolean parameter evaluated for the current message and for each possible output, sends out
+      the Job (or a copy of it?) on connections where the expression was evaluated to true.
+      (Can we use a generalized selection strategy , where a selectionStrategy can return multiple gates?)
+      (problem: what should happen with Jobs that carry resources when we try to clone them?)
+    Classifier
+      Same as Router, but does not allow cloning (i.e. the expression should evaluate to true only for a single 
+      output connection) (could use a SelectionStrategy component?)
+    Fork
+      Creates sub-jobs from an incoming job. Each sub job has a reference to the parent. The subjobs will
+      travel separately, until they reach a Join node, where each child randezvous. Until then, the parent job
+      remains in the Fork module.
+      Fork and Join should form a pair by using a "tag" in the fork module. The join module can specify the "tag".
+      	n this case only sub-jobs with the specified tag will be re-assembled. Other sub-jobs will pass through. 
+    Join
+      Waits for all child jobs with a given tag
+    Loop
+      Has two input and two output: input in[], input resume[], output continue, output out).
+      together with the Set module, can be used to create loops
+    
+
+
+
+
+Interfaces
+
+IPoolSelectionStrategy
+	select() - returns an ordered list of IResourcePool
+IAllocatorSelectionStrategy
+    select() - returns an ordered list of ResourceAllocator
+IJobSelectionStrategy
+    select() - returns an ordered list of jobs
+
+IResourceChangeListener
+  - resourceChanged  - contains a reference to the pool that was changed
+  (the allocator must check and reserve the resource). we must avoid to generate further notifications from
+  a changeListener to avoid loops in the notification chain  
+IResourcePool
+  - test
+  - tryToAllocate
+  - release
+
+
+allocation expression:
+- allocate by class, amount, pool
+- allocate from a specific pool(s) using a specified selection strategy
+- negative expression. do something if a resource is NOT available
+- allocate X token from (class A or B)
+
+(((allocateA) and (not conditionB)) or (allocateB)) or (allocateC)
+
+(classA || classB, amount, poollist) or ... or ...
+
+
