@@ -3,27 +3,25 @@ package org.omnetpp.jqueue.modules;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.omnetpp.jqueue.FIFOAllocationStrategy;
 import org.omnetpp.jqueue.IJob;
 import org.omnetpp.jqueue.IResource;
 import org.omnetpp.jqueue.IResourceExpression;
 import org.omnetpp.jqueue.IResourcePool;
 import org.omnetpp.jqueue.IServer;
 import org.omnetpp.jqueue.IServerPool;
-import org.omnetpp.jqueue.Job;
 import org.omnetpp.jqueue.ResourceAllocator;
 import org.omnetpp.jqueue.ServerPool;
-import org.omnetpp.simkernel.JMessage;
 import org.omnetpp.simkernel.JSimpleModule;
 import org.omnetpp.simkernel.cMessage;
 
 
-public class FIFO extends JSimpleModule {
+public class FIFOwith2CPUPool extends JSimpleModule {
 
 	List<IJob> queue = new ArrayList<IJob>();
 	List<IJob> activeJobs = new ArrayList<IJob>();
-	private IServerPool serverPool = new ServerPool("cpu", this);
-	private double serviceTime = 1.0;
+	private IServerPool server1Pool = new ServerPool("cpu", this);
+	private IServerPool server2Pool = new ServerPool("cpu", this);
+	private double serviceTime;
 	
 	ResourceAllocator ralloc = new ResourceAllocator() {
 
@@ -35,7 +33,7 @@ public class FIFO extends JSimpleModule {
 		@Override
 		protected void onAllocation(List<IJob> jobs) {
 			activeJobs.addAll(jobs);
-			queue.removeAll(jobs);
+			queue.retainAll(jobs);
 		}
 		
 		@Override
@@ -53,48 +51,48 @@ public class FIFO extends JSimpleModule {
 	
 	@Override
 	protected void initialize() {
+		
 		ralloc.setResourceExpression(new IResourceExpression() {
 
 			// resource selection strategy
 			@Override
 			public List<IResource> tryAllocateResourcesFor(IJob jobToTest) {
-				if (serverPool.getAmount() == 0)
-					return null;
-
 				List<IResource> allocated = new ArrayList<IResource>();
-				IServer res = serverPool.allocate(serviceTime);
-				allocated.add(res);
-				
+				IServer res;
+				// check which cpu has less utilization
+				IServerPool pool;
+				if (server1Pool.getAmount() >= 1 && server2Pool.getAmount() >=1)
+					pool = (server1Pool.getUtilization() < server2Pool.getUtilization() ? server1Pool : server2Pool);
+				else if (server1Pool.getAmount()>=1)
+					pool = server1Pool;
+				else if (server2Pool.getAmount()>=1)
+					pool = server2Pool;
+				else
+					pool = null;
+					
+				if (pool != null) {
+					res = pool.allocate(serviceTime);
+					allocated.add(res);
+				}
 				return allocated;
 			}
 
 			@Override
 			public List<IResourcePool> getReferencedResourcePools() {
 				List<IResourcePool> pools = new ArrayList<IResourcePool>();
-				pools.add(serverPool);
+				pools.add(server1Pool);
+				pools.add(server2Pool);
 				return pools;
 			}
-			
 		});
-		ralloc.setJobAllocStrat(new FIFOAllocationStrategy());
 		ralloc.hookResourceChangeListeners();
-		
+
 		super.initialize();
 	}
 	
 	@Override
 	protected void handleMessage(cMessage msg) {
-		JMessage jmsg = JMessage.cast(msg);
-		assert(jmsg != null);
-		if ( jmsg instanceof IServer) {
-			((IServer)jmsg).getResourcePool().deallocate((IServer)jmsg);
-		} else {
-			Job job = (Job)jmsg;
-			assert(job != null);
-			queue.add(job);
-			ralloc.tryToAllocateResources();
-		}
-		getDisplayString().setTagArg("t", 0, "length:"+queue.size());
-		getDisplayString().setTagArg("tt", 0, queue.toString());
+		queue.add((IJob)msg);
+		ralloc.tryToAllocateResources();
 	}
 }

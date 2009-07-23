@@ -1,0 +1,3 @@
+# Partial Tkenv config file -- see $HOME/.tkenvrc as well
+inspector "FIFOExample" "FIFOExample" "2" "607x241+40+200"
+

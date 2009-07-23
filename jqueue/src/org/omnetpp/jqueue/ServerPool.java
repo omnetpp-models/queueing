@@ -1,75 +1,98 @@
 package org.omnetpp.jqueue;
 
-public class ServerPool implements IServerPool {
+import java.util.ArrayList;
+import java.util.List;
 
-	int amount;
+import org.omnetpp.simkernel.JMessage;
+import org.omnetpp.simkernel.Simkernel;
+import org.omnetpp.simkernel.cSimpleModule;
+
+public class ServerPool extends ResourcePool implements IServerPool {
+
+	private cSimpleModule ownerModule;
+	int amount = 1;
+	int capacity = 1;
+
+	List<IServerListener> serverListeners = new ArrayList<IServerListener>();
+
+	@Override
+	public void addServerListener(IServerListener listener) {
+		serverListeners.add(listener);
+	}
+
+	@Override
+	public void removeServerListener(IServerListener listener) {
+		serverListeners.remove(listener);
+	}
 	
+	protected void fireServerFinished(IServer server) {
+		// TODO implement allocator selection strategy
+		for (IServerListener listener : serverListeners.toArray(new IServerListener[0]))
+			listener.serverFinished(server);
+	}
+
+	protected void fireServerInterrupted(IServer server) {
+		// TODO implement allocator selection strategy
+		for (IServerListener listener : serverListeners.toArray(new IServerListener[0]))
+			listener.serverInterrupted(server);
+	}
+
+	public ServerPool(String resourceClass, cSimpleModule ownerModule) {
+		super(resourceClass);
+		this.ownerModule = ownerModule;
+	}
+
 	@Override
 	public IServer allocate(double timeToHold) {
-		// TODO Auto-generated method stub
-		return new IServer() {
-
-			@Override
-			public boolean isActive() {
-				// TODO Auto-generated method stub
-				return false;
-			}
-
-			@Override
-			public double getAllocationTime() {
-				// TODO Auto-generated method stub
-				return 0;
-			}
-
-			@Override
-			public String getResourceClass() {
-				// TODO Auto-generated method stub
-				return null;
-			}
-
-			@Override
-			public IResourcePool getResourcePool() {
-				// TODO Auto-generated method stub
-				return null;
-			}
-			
-		};
+		if (amount == 0) 
+			throw new IllegalStateException("No free servers");
+		
+		amount--;
+		Server server = new Server(this);
+		server.setName("server - timout");
+		ownerModule.scheduleAt(Simkernel.simTime().add(timeToHold), server);
+		return server ;
 	}
 
 	@Override
 	public void deallocate(IServer server) {
-		// TODO Auto-generated method stub
+		amount++;
+		// TODO check capacity
+		JMessage msg = (JMessage)server;
+		if (msg.isScheduled()) {
+			ownerModule.cancelEvent(msg);
+			fireServerInterrupted(server);
+		} else {
+			fireServerFinished(server);
+		}
 
 	}
 
 	@Override
 	public int getAmount() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public int getCapacity() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public OverflowPolicy getOverflowPolicy() {
-		// TODO Auto-generated method stub
-		return null;
+		return amount;
 	}
 
 	@Override
 	public void setAmount(int amount) {
-		// TODO Auto-generated method stub
-
+		this.amount = amount;
+	}
+	
+	@Override
+	public int getCapacity() {
+		return capacity;
 	}
 
 	@Override
 	public void setCapacity(int capacity) {
+		this.capacity = capacity;
+		
+	}
+	
+	@Override
+	public OverflowPolicy getOverflowPolicy() {
 		// TODO Auto-generated method stub
-
+		return null;
 	}
 
 	@Override
@@ -79,21 +102,9 @@ public class ServerPool implements IServerPool {
 	}
 
 	@Override
-	public void addResourceChangeListener(IResourceChangeListener listener) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public String getResourceClass() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void removeResourceChangeListener(IResourceChangeListener listener) {
-		// TODO Auto-generated method stub
-
+	public double getUtilization() {
+		// FIXME
+		return 0.5;
 	}
 
 }

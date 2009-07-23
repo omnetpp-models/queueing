@@ -12,4 +12,7 @@ public interface IServerPool extends IResourcePool {
 
 	IServer allocate(double timeToHold);  // automatically deallocated after timeToHold. allocator is notified on deallocation
 	void deallocate(IServer server);  // only to deallocate prematurely
+	double getUtilization();
+	public void addServerListener(IServerListener listener);
+	public void removeServerListener(IServerListener listener);
 }

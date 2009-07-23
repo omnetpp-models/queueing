@@ -4,23 +4,20 @@ import java.util.List;
 
 
 
-public abstract class ResourceAllocator implements IResourceChangeListener {
+public abstract class ResourceAllocator implements IResourceChangeListener, IServerListener {
 	
 	private IResourceExpression resourceExpression;
 	private IJobAllocationStrategy jobAllocStrat;
 	private String resourceLabel;
 	
 	public void tryToAllocateResources() {
-		List<IJob> satisfiedJobs = jobAllocStrat.allocateResourcesForJobs(selectJobs(), resourceExpression, resourceLabel);
+		List<IJob> satisfiedJobs = jobAllocStrat.allocateResourcesForJobs(getJobList(), resourceExpression, resourceLabel);
 		if(!satisfiedJobs.isEmpty())
 			onAllocation(satisfiedJobs);
 	}
 
-	protected void onAllocation(List<IJob> job) {
-		
-	}
-	
-	protected abstract List<IJob> selectJobs(); 
+	protected abstract void onAllocation(List<IJob> job);
+	protected abstract List<IJob> getJobList(); 
 	
 	@Override
 	public void resourceChanged(IResourcePool pool) {
@@ -29,13 +26,26 @@ public abstract class ResourceAllocator implements IResourceChangeListener {
 
 	@Override
 	public void serverFinished(IServer server) {
+		assert(server.getOwnerJob() != null);
+		IJob job = server.getOwnerJob();
+		job.removeResource(server);
+		onServerFinished(job, server);
 	}
 
+	@Override
+	public void serverInterrupted(IServer server) {
+		assert(server.getOwnerJob() != null);
+		IJob job = server.getOwnerJob();
+		job.removeResource(server);
+		onServerInterrupted(job, server);
+	}
 
+	protected abstract void onServerFinished(IJob job, IServer server);
+	protected abstract void onServerInterrupted(IJob job, IServer server);
+	
 	public void setResourceExpression(IResourceExpression resourceExpression) {
 		this.resourceExpression = resourceExpression;
 	}
-
 
 	public IResourceExpression getResourceExpression() {
 		return resourceExpression;
@@ -44,7 +54,6 @@ public abstract class ResourceAllocator implements IResourceChangeListener {
 	public void setResourceLabel(String resourceLabel) {
 		this.resourceLabel = resourceLabel;
 	}
-
 
 	public String getResourceLabel() {
 		return resourceLabel;
@@ -58,5 +67,20 @@ public abstract class ResourceAllocator implements IResourceChangeListener {
 		return jobAllocStrat;
 	}
 
+	public void hookResourceChangeListeners() {
+		for (IResourcePool pool : resourceExpression.getReferencedResourcePools()) {
+			pool.addResourceChangeListener(this);
+			if (pool instanceof IServerPool)
+				((IServerPool) pool).addServerListener(this);
+			
+		}
+	}
 
+	public void unhookResourceChangeListeners() {
+		for (IResourcePool pool : resourceExpression.getReferencedResourcePools()) {
+			pool.removeResourceChangeListener(this);
+			if (pool instanceof IServerPool)
+				((IServerPool) pool).removeServerListener(this);
+		}
+	}
 }
