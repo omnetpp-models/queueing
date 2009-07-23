@@ -1,6 +1,5 @@
 package org.omnetpp.jqueue;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -8,19 +7,11 @@ import java.util.List;
 public abstract class ResourceAllocator implements IResourceChangeListener {
 	
 	private IResourceExpression resourceExpression;
+	private IJobAllocationStrategy jobAllocStrat;
 	private String resourceLabel;
 	
 	public void tryToAllocateResources() {
-		List<IJob> jobsToTest = selectJobs();
-		List<IJob> satisfiedJobs = new ArrayList<IJob>();
-		for (IJob job : jobsToTest) {
-			List<IResource> resources = resourceExpression.tryAllocateResourcesFor(job);
-			if (resources != null) {
-				job.addResources(resources, getResourceLabel());
-				satisfiedJobs.add(job);
-			}
-		}
-		
+		List<IJob> satisfiedJobs = jobAllocStrat.allocateResourcesForJobs(selectJobs(), resourceExpression, resourceLabel);
 		if(!satisfiedJobs.isEmpty())
 			onAllocation(satisfiedJobs);
 	}
@@ -57,6 +48,14 @@ public abstract class ResourceAllocator implements IResourceChangeListener {
 
 	public String getResourceLabel() {
 		return resourceLabel;
+	}
+
+	public void setJobAllocStrat(IJobAllocationStrategy jobAllocStrat) {
+		this.jobAllocStrat = jobAllocStrat;
+	}
+
+	public IJobAllocationStrategy getJobAllocStrat() {
+		return jobAllocStrat;
 	}
 
 
