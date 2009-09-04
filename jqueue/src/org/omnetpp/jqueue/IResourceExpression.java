@@ -1,6 +1,8 @@
 package org.omnetpp.jqueue;
 import java.util.List;
 
+import org.omnetpp.jqueue.IResourcePool.IResource;
+
 
 
 public interface IResourceExpression {

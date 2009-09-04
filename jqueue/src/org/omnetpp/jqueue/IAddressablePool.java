@@ -1,6 +1,11 @@
 package org.omnetpp.jqueue;
 
+
 public interface IAddressablePool extends IResourcePool {
+	public interface IAddressableResource extends IResource {
+		int getAddress();
+		int getLength();
+	}
 	int getCapacity();
 	void setCapacity(int capacity); 
 

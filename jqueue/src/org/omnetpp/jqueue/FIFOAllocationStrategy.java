@@ -3,6 +3,8 @@ package org.omnetpp.jqueue;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.omnetpp.jqueue.IResourcePool.IResource;
+
 public class FIFOAllocationStrategy implements IJobAllocationStrategy {
 
 	@Override

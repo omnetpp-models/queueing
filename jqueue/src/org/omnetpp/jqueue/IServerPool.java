@@ -1,6 +1,10 @@
 package org.omnetpp.jqueue;
 
+
 public interface IServerPool extends IResourcePool {
+	public interface IServer extends IResource {
+		IServerPool getResourcePool();
+	}
 	enum OverflowPolicy { ERROR, DROP, REFUSE};
 	
 	int getAmount();
@@ -10,8 +14,8 @@ public interface IServerPool extends IResourcePool {
 	OverflowPolicy getOverflowPolicy();
 	void setOverflowPolicy(OverflowPolicy policy);
 
-	IServer allocate(double timeToHold);  // automatically deallocated after timeToHold. allocator is notified on deallocation
-	void deallocate(IServer server);  // only to deallocate prematurely
+//	IServer allocate(double timeToHold);  // automatically deallocated after timeToHold. allocator is notified on deallocation
+//	void deallocate(IServer server);  // only to deallocate prematurely
 	double getUtilization();
 	public void addServerListener(IServerListener listener);
 	public void removeServerListener(IServerListener listener);

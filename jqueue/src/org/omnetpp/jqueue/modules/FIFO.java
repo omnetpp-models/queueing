@@ -5,14 +5,14 @@ import java.util.List;
 
 import org.omnetpp.jqueue.FIFOAllocationStrategy;
 import org.omnetpp.jqueue.IJob;
-import org.omnetpp.jqueue.IResource;
 import org.omnetpp.jqueue.IResourceExpression;
 import org.omnetpp.jqueue.IResourcePool;
-import org.omnetpp.jqueue.IServer;
 import org.omnetpp.jqueue.IServerPool;
 import org.omnetpp.jqueue.Job;
-import org.omnetpp.jqueue.ResourceAllocator;
-import org.omnetpp.jqueue.ServerPool;
+import org.omnetpp.jqueue.ResourceAllocatorImpl;
+import org.omnetpp.jqueue.ServerPoolImpl;
+import org.omnetpp.jqueue.IResourcePool.IResource;
+import org.omnetpp.jqueue.IServerPool.IServer;
 import org.omnetpp.simkernel.JMessage;
 import org.omnetpp.simkernel.JSimpleModule;
 import org.omnetpp.simkernel.cMessage;
@@ -22,10 +22,10 @@ public class FIFO extends JSimpleModule {
 
 	List<IJob> queue = new ArrayList<IJob>();
 	List<IJob> activeJobs = new ArrayList<IJob>();
-	private IServerPool serverPool = new ServerPool("cpu", this);
+	private IServerPool serverPool = new ServerPoolImpl("cpu", this);
 	private double serviceTime = 1.0;
 	
-	ResourceAllocator ralloc = new ResourceAllocator() {
+	ResourceAllocatorImpl ralloc = new ResourceAllocatorImpl() {
 
 		@Override
 		protected List<IJob> getJobList() {
@@ -62,7 +62,7 @@ public class FIFO extends JSimpleModule {
 					return null;
 
 				List<IResource> allocated = new ArrayList<IResource>();
-				IServer res = serverPool.allocate(serviceTime);
+				IServer res = (IServer)serverPool.allocate(String.valueOf(serviceTime));
 				allocated.add(res);
 				
 				return allocated;

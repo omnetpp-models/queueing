@@ -27,7 +27,7 @@
       Tags can be attached, removed from Job
       Parameters and other data can be added dynamically (i.e. loop variables, statistic counters)
       Resources can be added, removed (with names)
-    Join 
+    Merge 
       Supports to merge several incoming connections into a single output connection (Merge)
       Implement it as a compound module (less overhead), with an inner connection loop to attach all
       incoming gates to the output
@@ -48,7 +48,7 @@
       the amount of resource available, or info from the resource allocator itself.
       ResourceAllocators can hook a notify listener to any resource change.
       
-	LogicalResource
+	NumericResource
 	  An unordered, and identityless resource. Its value can be set (by direct method calls), and it
 	  notifies all its resource listeners. If a resource is available and granted, it is not
 	  removed from the resource. This can be used to create logical expressions.
@@ -109,6 +109,8 @@
       is met, the Job is sent out on the output. It must be possible to test against whether an active
       resource has expired. (i.e. certain amount of processing was done on the job)
       Any jobs allowed to pass will carry the attached resources. Resources are added to the Job as dynamic parameters.
+      We can specify whether the resource is carried or consumed by the job immediately. (consuming an active
+      resource means that the job should wait in the allocator till the requested processing time has passed)
       Attributes: resource req descriptor like: [resourceClass:amount]... can be attached with AND operator?
                   a list of used pools (pool name list)  
 		          exit criteria for jobs: msgAttr("progress")=1.0
@@ -143,12 +145,13 @@
     Classifier
       Same as Router, but does not allow cloning (i.e. the expression should evaluate to true only for a single 
       output connection) (could use a SelectionStrategy component?)
-    Fork
+    Split
       Creates sub-jobs from an incoming job. Each sub job has a reference to the parent. The subjobs will
       travel separately, until they reach a Join node, where each child randezvous. Until then, the parent job
       remains in the Fork module.
       Fork and Join should form a pair by using a "tag" in the fork module. The join module can specify the "tag".
-      	n this case only sub-jobs with the specified tag will be re-assembled. Other sub-jobs will pass through. 
+      	n this case only sub-jobs with the specified tag will be re-assembled. Other sub-jobs will pass through.
+      The resources allocated to the job do not split, and remain in the parent job.  
     Join
       Waits for all child jobs with a given tag
     Loop

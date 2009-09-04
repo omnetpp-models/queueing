@@ -3,6 +3,8 @@ package org.omnetpp.jqueue;
 import java.util.List;
 import java.util.Set;
 
+import org.omnetpp.jqueue.IResourcePool.IResource;
+
 public interface IJob {
 	int getPriority();
 	void setPriority(int priority);

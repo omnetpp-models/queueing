@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.omnetpp.jqueue.IResourcePool.IResource;
 import org.omnetpp.simkernel.JMessage;
 
 public class Job extends JMessage implements IJob {

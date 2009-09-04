@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.omnetpp.jqueue.IJob;
-import org.omnetpp.jqueue.IResource;
 import org.omnetpp.jqueue.IResourceExpression;
 import org.omnetpp.jqueue.IResourcePool;
-import org.omnetpp.jqueue.IServer;
 import org.omnetpp.jqueue.IServerPool;
-import org.omnetpp.jqueue.ResourceAllocator;
-import org.omnetpp.jqueue.ServerPool;
+import org.omnetpp.jqueue.ResourceAllocatorImpl;
+import org.omnetpp.jqueue.ServerPoolImpl;
+import org.omnetpp.jqueue.IResourcePool.IResource;
+import org.omnetpp.jqueue.IServerPool.IServer;
 import org.omnetpp.simkernel.JSimpleModule;
 import org.omnetpp.simkernel.cMessage;
 
@@ -19,11 +19,11 @@ public class FIFOwith2CPUPool extends JSimpleModule {
 
 	List<IJob> queue = new ArrayList<IJob>();
 	List<IJob> activeJobs = new ArrayList<IJob>();
-	private IServerPool server1Pool = new ServerPool("cpu", this);
-	private IServerPool server2Pool = new ServerPool("cpu", this);
+	private IServerPool server1Pool = new ServerPoolImpl("cpu", this);
+	private IServerPool server2Pool = new ServerPoolImpl("cpu", this);
 	private double serviceTime;
 	
-	ResourceAllocator ralloc = new ResourceAllocator() {
+	ResourceAllocatorImpl ralloc = new ResourceAllocatorImpl() {
 
 		@Override
 		protected List<IJob> getJobList() {
@@ -71,7 +71,7 @@ public class FIFOwith2CPUPool extends JSimpleModule {
 					pool = null;
 					
 				if (pool != null) {
-					res = pool.allocate(serviceTime);
+					res = (IServer)pool.allocate(String.valueOf(serviceTime));
 					allocated.add(res);
 				}
 				return allocated;

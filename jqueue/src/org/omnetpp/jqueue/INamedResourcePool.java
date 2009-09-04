@@ -3,7 +3,9 @@ import java.util.Set;
 
 
 public interface INamedResourcePool extends IResourcePool {
-	// TODO: capacity ???
+	public interface INamedResource extends IResource {
+		String getName();
+	}	// TODO: capacity ???
 	void setContents(Set<INamedResource> resources);
 	Set<INamedResource> getContents();
 	
