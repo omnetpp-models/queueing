@@ -13,19 +13,19 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-namespace afdx;
-
 cplusplus {{
 #include "Job.h"
-typedef queueing::Job Queueing_Job;
 }}
 
-message Queueing_Job;
+
+message queueing::Job;
+
+namespace afdx;
 
 //
 // A Message describing an AFDX msg. (length)  
 //
-message AFDXMessage extends Queueing_Job {
+message AFDXMessage extends queueing::Job {
     int networkId;       // (1) used as [n]
     int equipmentId;     // (1) used as [e]
     int interfaceId;     // (3bit) used as [i] 

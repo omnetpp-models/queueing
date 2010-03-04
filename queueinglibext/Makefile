@@ -74,6 +74,7 @@ $(TARGET) : $O/$(TARGET)
 $O/$(TARGET): $(OBJS)  $(wildcard $(EXTRA_OBJS)) Makefile
 	@mkdir -p $O
 	$(SHLIB_LD) -o $O/$(TARGET)  $(OBJS) $(EXTRA_OBJS) $(LIBS) $(OMNETPP_LIBS) $(LDFLAGS)
+	-$(CHCON) -t textrel_shlib_t $O/$(TARGET) || echo "You can probably safely ignore the above message."
 
 .PHONY:
 
